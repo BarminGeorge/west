@@ -33,8 +33,59 @@ class Gatling extends Creature {
 
         taskQueue.continueWith(continuation);
     }
-
 }
+
+class Lad extends Dog {
+    constructor(name = 'Браток', power = 2) {
+        super(name, power);
+    }
+
+    static getInGameCount() {
+        return this.inGameCount || 0;
+    }
+
+    static setInGameCount(value) {
+        this.inGameCount = value;
+    }
+
+    static getBonus() {
+        const count = this.getInGameCount();
+        return (count * (count + 1)) / 2;
+    }
+
+
+    doAfterComingIntoPlay(gameContext, continuation) {
+        Lad.setInGameCount(Lad.getInGameCount() + 1);
+        super.doAfterComingIntoPlay(gameContext, continuation);
+    }
+
+    doBeforeRemoving(continuation) {
+        Lad.setInGameCount(Lad.getInGameCount() - 1);
+        super.doBeforeRemoving(continuation);
+    }
+
+
+    modifyDealedDamageToCreature(value, toCard, gameContext, continuation) {
+        continuation(value + Lad.getBonus());
+    }
+
+    modifyTakenDamage(value, fromCard, gameContext, continuation) {
+        continuation(value - Lad.getBonus());
+    }
+
+
+    getDescriptions() {
+        const descriptions = super.getDescriptions();
+        
+        if (Lad.prototype.hasOwnProperty('modifyDealedDamageToCreature') || 
+            Lad.prototype.hasOwnProperty('modifyTakenDamage')) {
+            descriptions.push('Чем их больше, тем они сильнее');
+        }
+        
+        return descriptions;
+    }
+}
+
 class Duck extends Creature {
     constructor(name = 'Мирная Утка', power = 2) {
         super(name, power);
