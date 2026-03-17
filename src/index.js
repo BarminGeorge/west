@@ -55,6 +55,9 @@ class Dog extends Creature {
 }
 
 class PseudoDuck extends Dog {
+    constructor(name = "PsevdoDuck", power = 3){
+        super(name, power);
+    }
     quacks() {
         console.log('quack');
     }
