@@ -28,9 +28,29 @@ class Dog extends Creature {
     }
 }
 
-// Функции проверки (единственная версия)
+class Trasher extends Dog {
+    constructor(name = 'Громила', power = 5) {
+        super(name, power);
+    }
+
+    modifyTakenDamage(value, fromCard, gameContext, continuation) {
+        // Мигаем белым цветом (способность)
+        this.view.signalAbility(() => {
+            // Уменьшаем урон на 1 и передаем дальше
+            continuation(value - 1);
+        });
+    }
+
+    getDescriptions() {
+        // Получаем описания от родителя (цепочку прототипов)
+        const descriptions = super.getDescriptions();
+        // Добавляем описание способности Громилы
+        descriptions.push('Получает на 1 меньше урона');
+        return descriptions;
+    }
+}
+
 function isDuck(card) {
-    // Утка, если есть методы quacks/swims или это экземпляр Duck
     return card && (card.quacks && card.swims || card instanceof Duck);
 }
 
@@ -38,7 +58,6 @@ function isDog(card) {
     return card instanceof Dog;
 }
 
-// Описание существа
 function getCreatureDescription(card) {
     if (isDuck(card) && isDog(card)) {
         return 'Утка-Собака';
@@ -52,18 +71,17 @@ function getCreatureDescription(card) {
     return 'Существо';
 }
 
-// Колоды
 const seriffStartDeck = [
+    new Duck(),
+    new Duck(),
     new Duck(),
     new Duck(),
 ];
 
 const banditStartDeck = [
-    new Dog(),
-    new Dog(),
+    new Trasher(),
 ];
 
-// Создание и запуск игры
 const game = new Game(seriffStartDeck, banditStartDeck);
 SpeedRate.set(1);
 game.play(false, (winner) => {
