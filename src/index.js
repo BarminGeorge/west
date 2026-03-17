@@ -66,6 +66,37 @@ class PseudoDuck extends Dog {
     }
 }
 
+class Brewer extends Duck {
+    constructor(name = 'Пивовар', power = 2) {
+        super(name, power);
+    }
+
+    doBeforeAttack(gameContext, continuation) {
+        const { currentPlayer, oppositePlayer } = gameContext;
+        const allCards = currentPlayer.table.concat(oppositePlayer.table);
+        const ducks = allCards.filter(card => isDuck(card));
+
+        if (ducks.length === 0) {
+            continuation();
+            return;
+        }
+
+        const taskQueue = new TaskQueue();
+
+        ducks.forEach(card => {
+            taskQueue.push(onDone => {
+                card.maxPower += 1;
+                card.currentPower += 2;
+                card.updateView();
+                card.view.signalHeal(onDone);
+            });
+        });
+
+        taskQueue.continueWith(continuation);
+    }
+}
+
+
 class Lad extends Dog {
     constructor(name = 'Браток', power = 2) {
         super(name, power);
@@ -123,17 +154,13 @@ class Trasher extends Dog {
     }
 
     modifyTakenDamage(value, fromCard, gameContext, continuation) {
-        // Мигаем белым цветом (способность)
         this.view.signalAbility(() => {
-            // Уменьшаем урон на 1 и передаем дальше
             continuation(value - 1);
         });
     }
 
     getDescriptions() {
-        // Получаем описания от родителя (цепочку прототипов)
         const descriptions = super.getDescriptions();
-        // Добавляем описание способности Громилы
         descriptions.push('Получает на 1 меньше урона');
         return descriptions;
     }
@@ -163,11 +190,16 @@ function getCreatureDescription(card) {
 const seriffStartDeck = [
     new Duck(),
     new Duck(),
+    new Brewer(),
+    new Duck(),
+    new Duck(),
 ];
 const banditStartDeck = [
     new PseudoDuck(),
     new Dog(),
     new Dog(),
+    new Duck(),
+    new Duck(),
 ];
 
 const game = new Game(seriffStartDeck, banditStartDeck);
