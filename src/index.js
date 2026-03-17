@@ -10,6 +10,31 @@ class Creature extends Card {
     }
 }
 
+
+class Gatling extends Creature {
+    constructor(name = 'Гатлинг', power = 6){
+        super(name, power);
+    }
+
+    attack(gameContext, continuation) {
+        const taskQueue = new TaskQueue();
+        const oppositeTable = gameContext.oppositePlayer.table;
+
+        taskQueue.push(onDone => this.view.showAttack(onDone));
+
+        for (let position = 0; position < oppositeTable.length; position++) {
+            const card = oppositeTable[position];
+            if (card) {
+                taskQueue.push(onDone => {
+                    this.dealDamageToCreature(this.currentPower, card, gameContext, onDone);
+                });
+            }
+        }
+
+        taskQueue.continueWith(continuation);
+    }
+
+}
 class Duck extends Creature {
     constructor(name = 'Мирная Утка', power = 2) {
         super(name, power);
@@ -52,13 +77,15 @@ function getCreatureDescription(card) {
     return 'Существо';
 }
 
-// Колоды
 const seriffStartDeck = [
     new Duck(),
     new Duck(),
+    new Duck(),
+    new Gatling(),
 ];
-
 const banditStartDeck = [
+    new Dog(),
+    new Dog(),
     new Dog(),
     new Dog(),
 ];
