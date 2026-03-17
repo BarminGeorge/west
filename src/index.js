@@ -35,6 +35,34 @@ class Gatling extends Creature {
     }
 }
 
+
+class Duck extends Creature {
+    constructor(name = 'Мирная Утка', power = 2) {
+        super(name, power);
+    }
+    quacks() {
+        console.log('quack');
+    }
+    swims() {
+        console.log('float: both;');
+    }
+}
+
+class Dog extends Creature {
+    constructor(name = 'Пес-Бандит', power = 3) {
+        super(name, power);
+    }
+}
+
+class PseudoDuck extends Dog {
+    quacks() {
+        console.log('quack');
+    }
+    swims() {
+        console.log('float: both;');
+    }
+}
+
 class Lad extends Dog {
     constructor(name = 'Браток', power = 2) {
         super(name, power);
@@ -86,24 +114,6 @@ class Lad extends Dog {
     }
 }
 
-class Duck extends Creature {
-    constructor(name = 'Мирная Утка', power = 2) {
-        super(name, power);
-    }
-    quacks() {
-        console.log('quack');
-    }
-    swims() {
-        console.log('float: both;');
-    }
-}
-
-class Dog extends Creature {
-    constructor(name = 'Пес-Бандит', power = 3) {
-        super(name, power);
-    }
-}
-
 class Trasher extends Dog {
     constructor(name = 'Громила', power = 5) {
         super(name, power);
@@ -152,6 +162,7 @@ const seriffStartDeck = [
     new Duck(),
 ];
 const banditStartDeck = [
+    new PseudoDuck(),
     new Dog(),
     new Dog(),
 ];
